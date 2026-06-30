@@ -124,10 +124,10 @@ body {
 h1 {
   font-family: 'Space Grotesk', sans-serif;
   text-align: center;
-  font-size: clamp(2em, 6vw, 3em);
+  font-size: clamp(1.8em, 6vw, 3em); /* Mobile standard er jonno clamp dynamic kora hoyeche */
   font-weight: 700;
   letter-spacing: -1.5px;
-  line-height: 1.05;
+  line-height: 1.1;
   background: linear-gradient(100deg, #fff 10%, var(--c3) 40%, var(--c1) 65%, var(--c2) 90%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -145,8 +145,9 @@ h1 {
 p.subtitle {
   text-align: center;
   color: var(--muted);
-  font-size: 1em;
+  font-size: 0.95em;
   margin-bottom: 30px;
+  padding: 0 8px;
 }
 
 /* TABS */
@@ -156,6 +157,7 @@ p.subtitle {
   overflow-x: auto;
   padding: 4px 2px 14px;
   scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch; /* Smooth mobile scroll er jonno */
 }
 
 .tabs-bar::-webkit-scrollbar {
@@ -264,8 +266,8 @@ p.subtitle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
@@ -356,15 +358,11 @@ p.subtitle {
   line-height: 1.6;
 }
 
-@media(max-width:480px) {
-  .quick-fields { grid-template-columns: 1fr; }
-}
-
 .table-head {
   display: grid;
-  grid-template-columns: 1fr 86px 138px 36px;
+  grid-template-columns: 2fr 1fr 1.2fr 44px; /* Layout fluid kora hoyeche squish bondho korte */
   gap: 10px;
-  padding: 0 4px 14px;
+  padding: 0 4px 10px;
 }
 
 .table-head span {
@@ -383,7 +381,7 @@ p.subtitle {
 
 .course-row {
   display: grid;
-  grid-template-columns: 1fr 86px 138px 36px;
+  grid-template-columns: 2fr 1fr 1.2fr 44px;
   gap: 10px;
   align-items: center;
   animation: rowIn .4s cubic-bezier(.2,.85,.3,1.2) both;
@@ -404,12 +402,12 @@ p.subtitle {
 
 input, select {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px 10px; /* Mobile dynamic touch capability ready */
   border-radius: 13px;
   border: 1px solid rgba(255,255,255,0.09);
   background: rgba(255,255,255,0.035);
   color: var(--text);
-  font-size: 0.92em;
+  font-size: 0.9em;
   font-family: 'Plus Jakarta Sans',sans-serif;
   font-weight: 500;
   transition: border-color .22s ease, background .22s ease, box-shadow .22s ease, transform .15s ease;
@@ -445,7 +443,7 @@ select option {
   border: 1px solid rgba(255,107,129,0.25);
   color: var(--danger);
   border-radius: 12px;
-  width: 38px;
+  width: 100%; /* Column grid anujayi perfect square hobe */
   height: 38px;
   cursor: pointer;
   font-size: 1.2em;
@@ -471,7 +469,7 @@ button.action {
   position: relative;
   overflow: hidden;
   flex: 1;
-  min-width: 150px;
+  min-width: 140px;
   padding: 14px 16px;
   border-radius: 14px;
   border: none;
@@ -633,7 +631,7 @@ button.action:hover {
 .summary {
   display: flex;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   margin-top: 26px;
   flex-wrap: wrap;
 }
@@ -642,8 +640,9 @@ button.action:hover {
   background: rgba(255,255,255,0.035);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 16px;
-  padding: 14px 22px;
-  min-width: 110px;
+  padding: 14px 20px;
+  flex: 1;
+  min-width: 105px;
   transition: transform .2s ease, background .2s ease;
 }
 
@@ -666,7 +665,6 @@ button.action:hover {
   letter-spacing: 0.5px;
 }
 
-/* semester breakdown list inside result */
 .sem-breakdown {
   margin-top: 26px;
   text-align: left;
@@ -694,6 +692,7 @@ button.action:hover {
   border-radius: 12px;
   padding: 10px 16px;
   font-size: 0.88em;
+  gap: 8px;
 }
 
 .sem-bd-row .sname {
@@ -774,14 +773,6 @@ button.action:hover {
   font-weight: 600;
 }
 
-@media(max-width:560px) {
-  .grade-scale-table { grid-template-columns: repeat(4, 1fr); }
-}
-
-@media(max-width:380px) {
-  .grade-scale-table { grid-template-columns: repeat(3, 1fr); }
-}
-
 /* FOOTER */
 .site-footer {
   text-align: center;
@@ -819,11 +810,91 @@ button.action:hover {
   font-weight: 600;
 }
 
-@media(max-width:560px) {
-  .table-head { grid-template-columns: 1fr 64px 96px 32px; }
-  .course-row { grid-template-columns: 1fr 64px 96px 32px; }
-  .table-head span:first-child { display: none; }
-  .card { padding: 20px 16px 18px; border-radius: 20px; }
-  .ring-wrap { width: 170px; height: 170px; }
-  .ring-center .value { font-size: 2.1em; }
+/* SMART MEDIA QUERIES (FOR MOBILE RESPONSIVENESS) */
+@media(max-width: 600px) {
+  body {
+    padding: 24px 12px 60px; /* Outer spacing ta komanor jonno */
+  }
+
+  .card {
+    padding: 20px 14px 16px;
+    border-radius: 20px;
+  }
+  
+  .card::before {
+    border-radius: 20px;
+  }
+
+  /* Table head full display structure block kore dynamic row visualization kora hoyeche */
+  .table-head {
+    display: none; /* Mobile e standard list layout better experience dibe */
+  }
+
+  .course-row {
+    grid-template-columns: 1fr 1fr 44px;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    background: rgba(255,255,255,0.02);
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* First input span block pure full width nibe area control ar jonno */
+  .course-row input[type="text"] {
+    grid-column: span 2;
+    font-size: 0.95em;
+  }
+
+  /* Select and second input row automatic flex line base balanced */
+  .course-row input[type="number"],
+  .course-row select {
+    grid-column: span 1;
+  }
+
+  .remove-btn {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    height: 100%;
+    min-height: 44px;
+  }
+
+  .quick-fields {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .ring-wrap {
+    width: 160px;
+    height: 160px;
+  }
+
+  .ring-center .value {
+    font-size: 2.2em;
+  }
+
+  .grade-scale-table {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  
+  button.action {
+    width: 100%; /* Mobile automatic sequential action view wrap block */
+  }
+}
+
+@media(max-width: 400px) {
+  .grade-scale-table {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .sem-card-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .sem-name-input {
+    width: 100%;
+  }
 }
