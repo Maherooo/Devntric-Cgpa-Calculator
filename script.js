@@ -133,8 +133,8 @@ function addRowEl(courseName = '', credit = '', grade = 'A') {
     .join('');
 
   row.innerHTML = `
-    <input type="text" class="course-name" placeholder="e.g. Calculus I" value="${courseName}">
-    <input type="number" class="credit-hours" placeholder="Cr" min="0" step="0.5" value="${credit}">
+    <input type="text" class="course-name" placeholder="Subject" value="${courseName}">
+    <input type="number" class="credit-hours" placeholder="Credit" min="0" step="0.5" value="${credit}">
     <select class="grade-select">${gradeOptions}</select>
     <button class="remove-btn" title="Remove course">&times;</button>
   `;
