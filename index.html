@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGPA Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Link to external CSS stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="noise"></div>
+
+  <div class="container">
+    <div class="badge"><span>✦ Academic Tool</span></div>
+    <h1>Devntric CGPA Calculator</h1>
+    <p class="subtitle">Track GPA per semester, and CGPA across them all.</p>
+
+    <div class="tabs-bar" id="tabsBar"></div>
+
+    <div class="card">
+      <div class="sem-card-head">
+        <input type="text" class="sem-name-input" id="semNameInput" value="Semester 1">
+        <span class="sem-gpa-pill" id="semGpaPill">GPA — 0.00</span>
+      </div>
+
+      <div class="mode-toggle" id="modeToggle">
+        <button class="mode-btn" data-mode="detail">Per-Course Entry</button>
+        <button class="mode-btn" data-mode="quick">Quick Total Entry</button>
+      </div>
+
+      <!-- Per-course mode -->
+      <div id="detailModeView">
+        <div class="table-head">
+          <span>Course</span>
+          <span>Credits</span>
+          <span>Grade</span>
+          <span></span>
+        </div>
+        <div id="courseTableBody" class="course-list"></div>
+        <div class="btn-row">
+          <button class="action" id="addRowBtn">+ Add Course</button>
+        </div>
+      </div>
+
+      <!-- Quick total mode -->
+      <div id="quickModeView" style="display:none;">
+        <div class="quick-fields">
+          <div class="quick-field-group">
+            <label for="quickCreditInput">Total Credit Hours</label>
+            <input type="number" id="quickCreditInput" min="0" step="0.5" placeholder="e.g. 18">
+          </div>
+          <div class="quick-field-group">
+            <label for="quickGpaInput">Semester GPA</label>
+            <input type="number" id="quickGpaInput" min="0" max="4" step="0.01" placeholder="e.g. 3.65">
+          </div>
+        </div>
+        <div class="quick-hint">Already know your semester's total credit hours and GPA? Enter them directly here instead of adding every course — it'll be used the same way in the overall CGPA.</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="action" id="calcBtn">Calculate CGPA</button>
+        <button class="action" id="resetBtn">+ New Calculation</button>
+      </div>
+    </div>
+
+    <div class="card result" id="resultCard" style="display:none;">
+      <div class="result-label">Your Cumulative GPA</div>
+
+      <div class="ring-wrap">
+        <svg viewBox="0 0 190 190">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#06b6d4"/>
+              <stop offset="50%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="95" cy="95" r="85"></circle>
+          <circle class="ring-fill" id="ringFill" cx="95" cy="95" r="85"></circle>
+        </svg>
+        <div class="ring-center">
+          <div class="value" id="cgpaValue">0.00</div>
+          <div class="scale">out of 4.00</div>
+        </div>
+      </div>
+
+      <div id="gradeTag" class="grade-tag">—</div>
+
+      <div class="summary">
+        <div class="stat">
+          <div class="num" id="totalCredits">0</div>
+          <div class="lbl">Credits</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="totalCourses">0</div>
+          <div class="lbl">Courses</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="totalPoints">0</div>
+          <div class="lbl">Q. Points</div>
+        </div>
+      </div>
+
+      <div class="sem-breakdown" id="semBreakdown" style="display:none;">
+        <div class="sem-breakdown-title">Semester Breakdown</div>
+        <div id="semBreakdownList"></div>
+      </div>
+    </div>
+
+    <div class="card grade-scale-card">
+      <div class="grade-scale-title">Grade Point Scale</div>
+      <div class="grade-scale-table">
+        <div class="grade-cell"><div class="gletter">A+</div><div class="gpoint">4.00</div></div>
+        <div class="grade-cell"><div class="gletter">A</div><div class="gpoint">3.75</div></div>
+        <div class="grade-cell"><div class="gletter">A-</div><div class="gpoint">3.50</div></div>
+        <div class="grade-cell"><div class="gletter">B+</div><div class="gpoint">3.25</div></div>
+        <div class="grade-cell"><div class="gletter">B</div><div class="gpoint">3.00</div></div>
+        <div class="grade-cell"><div class="gletter">B-</div><div class="gpoint">2.75</div></div>
+        <div class="grade-cell"><div class="gletter">C+</div><div class="gpoint">2.50</div></div>
+        <div class="grade-cell"><div class="gletter">C</div><div class="gpoint">2.25</div></div>
+        <div class="grade-cell"><div class="gletter">C-</div><div class="gpoint">2.00</div></div>
+        <div class="grade-cell"><div class="gletter">D+</div><div class="gpoint">1.50</div></div>
+        <div class="grade-cell"><div class="gletter">D</div><div class="gpoint">1.00</div></div>
+        <div class="grade-cell"><div class="gletter">F</div><div class="gpoint">0.00</div></div>
+      </div>
+    </div> 
+
+    <div class="site-footer">
+      Made with by <a href="https://www.devntric.com" target="_blank" rel="noopener" class="brand-link">devntric</a>
+      <div class="dev-credit">Developed by <span><a href="https://www.linkedin.com/in/maher-ahmed77/" style="text-decoration: none;">Maher Ahmed</a></span></div>
+    </div>
+  </div>
+
+  <!-- Link to external JS logic -->
+  <script src="script.js"></script>
+</body>
+</html>
