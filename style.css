@@ -121,6 +121,20 @@ body {
   color: #d8d4ff;
 }
 
+/* DEVNTRIC ICON — fixed to be small on ALL screen sizes, not just mobile */
+.devntric-icon {
+  display: block;
+  width: 50px;
+  height: 80px;
+  max-width: 40px;
+  max-height: 40px;
+  object-fit: cover;
+  object-position: 15% center;
+  border-radius: 10px;
+  mix-blend-mode: screen;
+  margin: 0 auto 8px;
+}
+
 h1 {
   font-family: 'Space Grotesk', sans-serif;
   text-align: center;
@@ -857,6 +871,11 @@ button.action:hover {
     grid-row: 1 / span 2;
     height: 100%;
     min-height: 44px;
+  }
+
+  .devntric-icon {
+    width: 50px;
+    height: 50px;
   }
 
   .quick-fields {

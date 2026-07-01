@@ -7,13 +7,20 @@ const gradePoints = {
 
 const RING_CIRC = 2 * Math.PI * 85;
 
-// ---- STATE (in-memory only) ----
+// ---- STATE ----
 let semesters = [];
 let activeSemId = null;
 let idCounter = 0;
 
-function newId() { 
-  return 'sem-' + (++idCounter); 
+function newId() {
+  return 'sem-' + (++idCounter);
+}
+
+// LocalStorage-এ ডাটা সেভ করার ফাংশন
+function saveToLocalStorage() {
+  localStorage.setItem('cgpa_semesters', JSON.stringify(semesters));
+  localStorage.setItem('cgpa_activeSemId', activeSemId);
+  localStorage.setItem('cgpa_idCounter', idCounter);
 }
 
 function createSemester(name) {
@@ -30,6 +37,7 @@ function createSemester(name) {
     ]
   };
   semesters.push(sem);
+  saveToLocalStorage();
   return sem;
 }
 
@@ -37,7 +45,6 @@ function getActiveSem() {
   return semesters.find(s => s.id === activeSemId);
 }
 
-// ---- SYNC current DOM inputs into active semester's state ----
 function syncActiveFromDOM() {
   const sem = getActiveSem();
   if (!sem) return;
@@ -58,9 +65,9 @@ function syncActiveFromDOM() {
       }));
     }
   }
+  saveToLocalStorage(); // ডাটা পরিবর্তন হলেই সেভ হবে
 }
 
-// ---- compute GPA for one semester's course list (detail mode) ----
 function computeGpa(courses) {
   let totalCredits = 0, totalPoints = 0, count = 0;
   courses.forEach(c => {
@@ -77,7 +84,6 @@ function computeGpa(courses) {
   };
 }
 
-// ---- get result for a semester, respecting its mode ----
 function getSemResult(sem) {
   if (sem.mode === 'quick') {
     const credit = parseFloat(sem.quickCredit);
@@ -94,12 +100,11 @@ function getSemResult(sem) {
   return computeGpa(sem.courses);
 }
 
-// ---- RENDER course rows / quick fields for active semester ----
 function renderCourseRows() {
   const sem = getActiveSem();
+  if (!sem) return;
   document.getElementById('semNameInput').value = sem.name;
 
-  // mode toggle button states
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.mode === sem.mode);
   });
@@ -159,25 +164,27 @@ function addRowEl(courseName = '', credit = '', grade = 'A') {
 function updateSemGpaPill() {
   syncActiveFromDOM();
   const sem = getActiveSem();
+  if (!sem) return;
   const { gpa } = getSemResult(sem);
   document.getElementById('semGpaPill').textContent = `GPA — ${gpa.toFixed(2)}`;
 }
 
-// ---- MODE TOGGLE ----
 document.getElementById('modeToggle').addEventListener('click', (e) => {
   const btn = e.target.closest('.mode-btn');
   if (!btn) return;
   syncActiveFromDOM();
   const sem = getActiveSem();
-  sem.mode = btn.dataset.mode;
-  renderTabs();
-  renderCourseRows();
+  if (sem) {
+    sem.mode = btn.dataset.mode;
+    saveToLocalStorage();
+    renderTabs();
+    renderCourseRows();
+  }
 });
 
 document.getElementById('quickCreditInput').addEventListener('input', () => { syncActiveFromDOM(); updateSemGpaPill(); renderTabs(); });
 document.getElementById('quickGpaInput').addEventListener('input', () => { syncActiveFromDOM(); updateSemGpaPill(); renderTabs(); });
 
-// ---- TABS ----
 function renderTabs() {
   const bar = document.getElementById('tabsBar');
   bar.innerHTML = '';
@@ -210,6 +217,7 @@ function renderTabs() {
     syncActiveFromDOM();
     const sem = createSemester();
     activeSemId = sem.id;
+    saveToLocalStorage();
     renderTabs();
     renderCourseRows();
   });
@@ -219,6 +227,7 @@ function renderTabs() {
 function switchToSemester(id) {
   syncActiveFromDOM();
   activeSemId = id;
+  saveToLocalStorage();
   renderTabs();
   renderCourseRows();
 }
@@ -229,16 +238,17 @@ function deleteSemester(id) {
   if (activeSemId === id) {
     activeSemId = semesters[0].id;
   }
+  saveToLocalStorage();
   renderTabs();
   renderCourseRows();
 }
 
-// ---- RESET ----
 function resetAll() {
   semesters = [];
   idCounter = 0;
   const sem = createSemester('Semester 1');
   activeSemId = sem.id;
+  saveToLocalStorage();
   renderTabs();
   renderCourseRows();
 
@@ -248,14 +258,13 @@ function resetAll() {
   document.getElementById('ringFill').style.strokeDashoffset = RING_CIRC;
 }
 
-// ---- NEW CALCULATION (confirm + clear) ----
 function startNewCalculation() {
   const ok = confirm('This will clear all your semester and course data. Start a new calculation?');
   if (!ok) return;
+  localStorage.clear(); // লোকাল স্টোরেজ ক্লিয়ার করবে
   resetAll();
 }
 
-// ---- ANIMATE NUMBER ----
 function animateNumber(el, target, decimals = 2, duration = 800) {
   const startTime = performance.now();
   function tick(now) {
@@ -277,7 +286,6 @@ function gradeRemark(cgpa) {
   return "Needs Improvement";
 }
 
-// ---- CALCULATE OVERALL CGPA ACROSS ALL SEMESTERS ----
 function calculateCGPA() {
   syncActiveFromDOM();
 
@@ -311,7 +319,6 @@ function calculateCGPA() {
     document.getElementById('ringFill').style.strokeDashoffset = offset;
   });
 
-  // semester breakdown
   const bdWrap = document.getElementById('semBreakdown');
   const bdList = document.getElementById('semBreakdownList');
   bdList.innerHTML = '';
@@ -336,7 +343,6 @@ function calculateCGPA() {
   resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// ---- INIT ----
 document.getElementById('addRowBtn').addEventListener('click', () => { addRowEl(); syncActiveFromDOM(); updateSemGpaPill(); });
 document.getElementById('calcBtn').addEventListener('click', calculateCGPA);
 document.getElementById('resetBtn').addEventListener('click', startNewCalculation);
@@ -345,11 +351,23 @@ document.getElementById('semNameInput').addEventListener('input', () => {
   renderTabs();
 });
 
+// ---- INIT FUNCTION (With LocalStorage Load) ----
 function init() {
-  semesters = [];
-  idCounter = 0;
-  const sem = createSemester('Semester 1');
-  activeSemId = sem.id;
+  const savedSemesters = localStorage.getItem('cgpa_semesters');
+  const savedActiveSemId = localStorage.getItem('cgpa_activeSemId');
+  const savedIdCounter = localStorage.getItem('cgpa_idCounter');
+
+  if (savedSemesters && savedActiveSemId && savedIdCounter) {
+    semesters = JSON.parse(savedSemesters);
+    activeSemId = savedActiveSemId;
+    idCounter = parseInt(savedIdCounter, 10);
+  } else {
+    semesters = [];
+    idCounter = 0;
+    const sem = createSemester('Semester 1');
+    activeSemId = sem.id;
+  }
+  
   renderTabs();
   renderCourseRows();
 }
